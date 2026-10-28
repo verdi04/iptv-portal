@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { encryptIptvFields } from '@/lib/iptv-crypto';
 
 export async function POST(request) {
   let body;
@@ -51,14 +52,15 @@ export async function POST(request) {
   }
 
   try {
+    const record = {
+      mac_address: mac_address.trim(),
+      m3u_link: m3u_link ?? null,
+      xtream_url: xtream_url ?? null,
+      xtream_username: xtream_username ?? null,
+      xtream_password: xtream_password ?? null,
+    };
     const { error } = await supabase.from('iptv_users').upsert(
-      {
-        mac_address: mac_address.trim(),
-        m3u_link: m3u_link ?? null,
-        xtream_url: xtream_url ?? null,
-        xtream_username: xtream_username ?? null,
-        xtream_password: xtream_password ?? null,
-      },
+      { ...record, ...encryptIptvFields(record) },
       { onConflict: 'mac_address' },
     );
 

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { decryptIptvFields } from '@/lib/iptv-crypto';
 
 export async function GET(_request, { params }) {
   try {
@@ -28,7 +29,7 @@ export async function GET(_request, { params }) {
       );
     }
 
-    return Response.json({ success: true, data });
+    return Response.json({ success: true, data: decryptIptvFields(data) });
   } catch (error) {
     console.error('Failed to get IPTV user:', error);
 
